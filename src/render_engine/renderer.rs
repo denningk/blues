@@ -1,5 +1,4 @@
 extern crate gl;
-use self::gl::types::*;
 
 use super::raw_model::RawModel;
 
@@ -10,7 +9,7 @@ pub fn prepare() {
     }
 }
 
-pub fn render(model: RawModel) {
+pub fn render(model: &RawModel) {
     unsafe { 
         gl::BindVertexArray(*model.vao_id());
         gl::EnableVertexAttribArray(0);

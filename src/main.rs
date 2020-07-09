@@ -1,15 +1,36 @@
 mod render_engine;
 
-use render_engine::display_manager;
+use render_engine::display_manager::DisplayManager;
+use render_engine::loader::Loader;
+use render_engine::renderer;
 
 fn main() {
-    println!("Hello, world!");
-    let (mut window, events, mut glfw) = display_manager::create_display();
+    // create window
+    let mut display_manager = DisplayManager::create_display("Blues Game Engine", 800, 600);
+
+    let mut loader = Loader::new();
+
+    let vertices = vec![
+        // Left bottom triangle
+        -0.5,  0.5, 0.0,
+		-0.5, -0.5, 0.0,
+		 0.5, -0.5, 0.0,
+        // Right top triangle
+		 0.5, -0.5, 0.0,
+		 0.5,  0.5, 0.0,
+		-0.5,  0.5, 0.0
+    ];
+
+    let model = loader.load_to_vao(&vertices);
 
     // render loop
-    while !window.should_close() {
-        display_manager::update_display(&mut window, &events, &mut glfw);
+    while !display_manager.should_window_close() {
+        renderer::prepare();
+        // game logic
+        renderer::render(&model);
+        display_manager.update_display();
     }
 
-    display_manager::close_display(window);
+    loader.clean_up();
+    display_manager.close_display();
 }

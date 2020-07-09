@@ -17,7 +17,7 @@ impl Loader {
         Loader { vaos: Vec::new(), vbos: Vec::new() }
     }
 
-    pub fn load_to_vao(&mut self, positions: Vec<f64>) -> RawModel {
+    pub fn load_to_vao(&mut self, positions: &Vec<f64>) -> RawModel {
         let vao_id = self.create_vao();
         self.store_data_in_attribute_list(0, &positions);
         self.unbind_vao();
