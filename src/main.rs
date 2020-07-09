@@ -11,17 +11,18 @@ fn main() {
     let mut loader = Loader::new();
 
     let vertices: Vec<f32> = vec![
-        // Left bottom triangle
         -0.5,  0.5, 0.0,
 		-0.5, -0.5, 0.0,
 		 0.5, -0.5, 0.0,
-        // Right top triangle
-		 0.5, -0.5, 0.0,
 		 0.5,  0.5, 0.0,
-		-0.5,  0.5, 0.0
     ];
 
-    let model = loader.load_to_vao(&vertices);
+    let indices: Vec<u32> = vec![
+        0, 1, 3,
+        3, 1, 2
+    ];
+
+    let model = loader.load_to_vao(&vertices, &indices);
 
     // render loop
     while !display_manager.should_window_close() {

@@ -17,12 +17,13 @@ impl Loader {
         Loader { vaos: Vec::new(), vbos: Vec::new() }
     }
 
-    pub fn load_to_vao(&mut self, positions: &Vec<f32>) -> RawModel {
+    pub fn load_to_vao(&mut self, positions: &Vec<f32>, indices: &Vec<u32>) -> RawModel {
         let vao_id = self.create_vao();
+        self.bind_indices_buffer(indices);
         self.store_data_in_attribute_list(0, &positions);
         self.unbind_vao();
 
-        RawModel::new(vao_id, positions.len() as i32 / 3)
+        RawModel::new(vao_id, indices.len() as i32)
     }
 
     pub fn clean_up(&self) {
@@ -61,6 +62,21 @@ impl Loader {
             );
             gl::VertexAttribPointer(attribute_number, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());
             gl::BindBuffer(gl::ARRAY_BUFFER, 0);
+        }
+    }
+
+    fn bind_indices_buffer(&mut self, indices: &Vec<u32>) {
+        let mut vbo_id = 0;
+        unsafe {
+            gl::GenBuffers(1, &mut vbo_id);
+            self.vbos.push(vbo_id);
+            gl::BindBuffer(gl::ELEMENT_ARRAY_BUFFER, vbo_id);
+            gl::BufferData(
+                gl::ELEMENT_ARRAY_BUFFER,
+                (indices.len() * mem::size_of::<GLint>()) as GLsizeiptr,
+                &indices[0] as *const u32 as *const c_void,
+                gl::STATIC_DRAW
+            );
         }
     }
 
