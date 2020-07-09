@@ -17,7 +17,7 @@ impl Loader {
         Loader { vaos: Vec::new(), vbos: Vec::new() }
     }
 
-    pub fn load_to_vao(&mut self, positions: &Vec<f64>) -> RawModel {
+    pub fn load_to_vao(&mut self, positions: &Vec<f32>) -> RawModel {
         let vao_id = self.create_vao();
         self.store_data_in_attribute_list(0, &positions);
         self.unbind_vao();
@@ -47,7 +47,7 @@ impl Loader {
         vao_id
     }
 
-    fn store_data_in_attribute_list(&mut self, attribute_number: u32, data: &Vec<f64>) {
+    fn store_data_in_attribute_list(&mut self, attribute_number: u32, data: &Vec<f32>) {
         let mut vbo_id = 0;
         unsafe {
             gl::GenBuffers(1, &mut vbo_id);
@@ -56,7 +56,7 @@ impl Loader {
             gl::BufferData(
                 gl::ARRAY_BUFFER,
                 (data.len() * mem::size_of::<GLfloat>()) as GLsizeiptr,
-                &data[0] as *const f64 as *const c_void,
+                &data[0] as *const f32 as *const c_void,
                 gl::STATIC_DRAW
             );
             gl::VertexAttribPointer(attribute_number, 3, gl::FLOAT, gl::FALSE, 0, ptr::null());

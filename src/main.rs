@@ -10,7 +10,7 @@ fn main() {
 
     let mut loader = Loader::new();
 
-    let vertices = vec![
+    let vertices: Vec<f32> = vec![
         // Left bottom triangle
         -0.5,  0.5, 0.0,
 		-0.5, -0.5, 0.0,
