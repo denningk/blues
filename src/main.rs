@@ -1,10 +1,14 @@
 mod render_engine;
 mod shaders;
+mod models;
+mod textures;
 
 use render_engine::display_manager::DisplayManager;
 use render_engine::loader::Loader;
 use render_engine::renderer;
 use shaders::static_shader;
+use textures::model_texture::ModelTexture;
+use models::textured_model::TexturedModel;
 
 fn main() {
     // create window
@@ -24,14 +28,23 @@ fn main() {
         3, 1, 2
     ];
 
-    let model = loader.load_to_vao(&vertices, &indices);
+    let texture_coords: Vec<f32> = vec![
+        0.0, 0.0,
+        0.0, 1.0,
+        1.0, 1.0,
+        1.0, 0.0
+    ];
+
+    let model = loader.load_to_vao(&vertices, &texture_coords, &indices);
+    let texture = ModelTexture::new(loader.load_texture("container.jpg"));
+    let textured_model = TexturedModel::new(model, texture);
 
     // render loop
     while !display_manager.should_window_close() {
         renderer::prepare();
         shader.start();
         // game logic
-        renderer::render(&model);
+        renderer::render(&textured_model);
         shader.stop();
         display_manager.update_display();
     }

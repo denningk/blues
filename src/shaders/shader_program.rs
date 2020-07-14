@@ -13,7 +13,7 @@ pub struct ShaderProgram {
 }
 
 impl ShaderProgram {
-    pub fn new(vertex_file: &str, fragment_file: &str, attribute: u32, variable_name: &str) -> ShaderProgram {
+    pub fn new(vertex_file: &str, fragment_file: &str) -> ShaderProgram {
         let vertex_shader_id = load_shader(vertex_file, gl::VERTEX_SHADER);
         let fragment_shader_id = load_shader(fragment_file, gl::FRAGMENT_SHADER);
         
@@ -23,7 +23,6 @@ impl ShaderProgram {
             gl::AttachShader(program_id, fragment_shader_id);
             gl::LinkProgram(program_id);
             gl::ValidateProgram(program_id);
-            Self::bind_attribute(program_id, attribute, variable_name);
 
             program_id
         };
@@ -50,8 +49,8 @@ impl ShaderProgram {
         }
     }
 
-    fn bind_attribute(program_id: u32, attribute: u32, variable_name: &str) {
-        unsafe { gl::BindAttribLocation(program_id, attribute, CString::new(variable_name).unwrap().as_ptr()); }
+    pub fn bind_attribute(&self, attribute: u32, variable_name: &str) {
+        unsafe { gl::BindAttribLocation(self.program_id, attribute, CString::new(variable_name).unwrap().as_ptr()); }
     }
 }
 
