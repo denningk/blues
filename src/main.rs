@@ -36,7 +36,7 @@ fn main() {
     ];
 
     let model = loader.load_to_vao(&vertices, &texture_coords, &indices);
-    let texture = ModelTexture::new(loader.load_texture("container.jpg"));
+    let texture = ModelTexture::new(loader.load_texture("funny.jpg"));
     let textured_model = TexturedModel::new(model, texture);
 
     // render loop

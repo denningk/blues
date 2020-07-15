@@ -6,28 +6,35 @@ use std::ffi::CString;
 use std::ptr;
 use std::str;
 
-pub struct ShaderProgram {
+pub struct ShaderProgram<'a> {
     program_id: u32,
     vertex_shader_id: u32,
     fragment_shader_id: u32,
+    shader_variables: Vec<&'a str>,
 }
 
-impl ShaderProgram {
-    pub fn new(vertex_file: &str, fragment_file: &str) -> ShaderProgram {
+impl<'a> ShaderProgram<'a> {
+    pub fn new(vertex_file: &str, fragment_file: &str, shader_variables: Vec<&'a str>) -> ShaderProgram<'a> {
         let vertex_shader_id = load_shader(vertex_file, gl::VERTEX_SHADER);
         let fragment_shader_id = load_shader(fragment_file, gl::FRAGMENT_SHADER);
         
-        let program_id = unsafe {
+        let program = unsafe {
             let program_id = gl::CreateProgram();
+
+            let program = ShaderProgram { program_id, vertex_shader_id, fragment_shader_id, shader_variables };
+
             gl::AttachShader(program_id, vertex_shader_id);
             gl::AttachShader(program_id, fragment_shader_id);
+
+            program.bind_attributes();
+
             gl::LinkProgram(program_id);
             gl::ValidateProgram(program_id);
 
-            program_id
+            program
         };
 
-        ShaderProgram { program_id, vertex_shader_id, fragment_shader_id }
+        program
     }
 
     pub fn start(&self) {
@@ -46,6 +53,12 @@ impl ShaderProgram {
             gl::DeleteShader(self.vertex_shader_id);
             gl::DeleteShader(self.fragment_shader_id);
             gl::DeleteProgram(self.program_id);
+        }
+    }
+
+    fn bind_attributes(&self) {
+        for (pos, i) in self.shader_variables.iter().enumerate() {
+            self.bind_attribute(pos as u32, i);
         }
     }
 
