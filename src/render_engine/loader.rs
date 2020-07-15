@@ -2,7 +2,7 @@ extern crate gl;
 use self::gl::types::*;
 
 extern crate image;
-use image::GenericImage;
+use image::GenericImageView;
 
 use std::mem;
 use std::os::raw::c_void;
@@ -48,13 +48,14 @@ impl Loader {
         
         unsafe {
             let img = image::open(&Path::new(&format!("res/{}", file_name))).expect("Failed to load texture");
-            let data = img.raw_pixels();
+            let data = img.to_rgb().into_raw();
+            let (width, height) = img.dimensions();
             gl::TexImage2D(
                 gl::TEXTURE_2D,
                 0,
                 gl::RGB as i32,
-                img.width() as i32,
-                img.height() as i32,
+                width as i32,
+                height as i32,
                 0,
                 gl::RGB,
                 gl::UNSIGNED_BYTE,
