@@ -1,6 +1,8 @@
 extern crate gl;
 use self::gl::types::*;
 
+use cgmath::{Matrix, Matrix4, Vector3};
+
 use std::fs;
 use std::ffi::CString;
 use std::ptr;
@@ -11,17 +13,18 @@ pub struct ShaderProgram<'a> {
     vertex_shader_id: u32,
     fragment_shader_id: u32,
     shader_variables: Vec<&'a str>,
+    uniform_locations: Vec<&'a str>,
 }
 
 impl<'a> ShaderProgram<'a> {
-    pub fn new(vertex_file: &str, fragment_file: &str, shader_variables: Vec<&'a str>) -> ShaderProgram<'a> {
+    pub fn new(vertex_file: &str, fragment_file: &str, shader_variables: Vec<&'a str>, uniform_locations: Vec<&'a str>) -> ShaderProgram<'a> {
         let vertex_shader_id = load_shader(vertex_file, gl::VERTEX_SHADER);
         let fragment_shader_id = load_shader(fragment_file, gl::FRAGMENT_SHADER);
         
         let program = unsafe {
             let program_id = gl::CreateProgram();
 
-            let program = ShaderProgram { program_id, vertex_shader_id, fragment_shader_id, shader_variables };
+            let program = ShaderProgram { program_id, vertex_shader_id, fragment_shader_id, shader_variables, uniform_locations };
 
             gl::AttachShader(program_id, vertex_shader_id);
             gl::AttachShader(program_id, fragment_shader_id);
@@ -31,10 +34,22 @@ impl<'a> ShaderProgram<'a> {
             gl::LinkProgram(program_id);
             gl::ValidateProgram(program_id);
 
+            //program.get_all_uniform_locations();
+
             program
         };
 
         program
+    }
+
+    // fn get_all_uniform_locations(&self) {
+    //     for loc in &self.uniform_locations {
+    //         self.get_uniform_location(loc);
+    //     }
+    // }
+
+    pub fn get_uniform_location(&self, uniform_name: &str) -> i32 {
+        unsafe { return gl::GetUniformLocation(self.program_id, CString::new(uniform_name).unwrap().as_ptr()); }
     }
 
     pub fn start(&self) {
@@ -64,6 +79,27 @@ impl<'a> ShaderProgram<'a> {
 
     pub fn bind_attribute(&self, attribute: u32, variable_name: &str) {
         unsafe { gl::BindAttribLocation(self.program_id, attribute, CString::new(variable_name).unwrap().as_ptr()); }
+    }
+
+    fn load_float(location: i32, value: f32) {
+        unsafe { gl::Uniform1f(location, value); }
+    }
+
+    fn load_vector(location: i32, vector: &Vector3<f32>) {
+        unsafe { gl::Uniform3f(location, vector.x, vector.y, vector.z); }
+    }
+
+    fn load_boolean(location: i32, value: bool) {
+        let mut to_load = 0.0;
+        if value {
+            to_load = 1.0;
+        }
+
+        unsafe { gl::Uniform1f(location, to_load); }
+    }
+
+    pub fn load_matrix(location: i32, matrix: &Matrix4<f32>) {
+        unsafe { gl::UniformMatrix4fv(location, 1, gl::FALSE, matrix.as_ptr()); }
     }
 }
 

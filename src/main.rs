@@ -14,7 +14,7 @@ fn main() {
     // create window
     let mut display_manager = DisplayManager::create_display("Blues Game Engine", 800, 600);
     let mut loader = Loader::new();
-    let shader = static_shader::new_static_shader();
+    let shader = static_shader::StaticShader::new();
 
     let vertices: Vec<f32> = vec![
         -0.5,  0.5, 0.0,
@@ -42,14 +42,14 @@ fn main() {
     // render loop
     while !display_manager.should_window_close() {
         renderer::prepare();
-        shader.start();
+        shader.program.start();
         // game logic
         renderer::render(&textured_model);
-        shader.stop();
+        shader.program.stop();
         display_manager.update_display();
     }
 
-    shader.clean_up();
+    shader.program.clean_up();
     loader.clean_up();
     display_manager.close_display();
 }
