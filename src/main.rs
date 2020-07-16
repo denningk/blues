@@ -2,6 +2,7 @@ mod render_engine;
 mod shaders;
 mod models;
 mod textures;
+mod toolbox;
 
 use render_engine::display_manager::DisplayManager;
 use render_engine::loader::Loader;
@@ -9,6 +10,7 @@ use render_engine::renderer;
 use shaders::static_shader;
 use textures::model_texture::ModelTexture;
 use models::textured_model::TexturedModel;
+use toolbox::math;
 
 fn main() {
     // create window
