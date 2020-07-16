@@ -3,6 +3,9 @@ mod shaders;
 mod models;
 mod textures;
 mod toolbox;
+mod entities;
+
+use cgmath::{vec3};
 
 use render_engine::display_manager::DisplayManager;
 use render_engine::loader::Loader;
@@ -11,6 +14,7 @@ use shaders::static_shader;
 use textures::model_texture::ModelTexture;
 use models::textured_model::TexturedModel;
 use toolbox::math;
+use entities::entity::Entity;
 
 fn main() {
     // create window
@@ -39,14 +43,18 @@ fn main() {
 
     let model = loader.load_to_vao(&vertices, &texture_coords, &indices);
     let texture = ModelTexture::new(loader.load_texture("funny.png"));
-    let textured_model = TexturedModel::new(model, texture);
+    let static_model = TexturedModel::new(model, texture);
+
+    let mut entity = Entity::new(static_model, vec3(-1.0,0.0,0.0), 0.0, 0.0, 0.0, 1.0);
 
     // render loop
     while !display_manager.should_window_close() {
+        entity.increase_position(0.002, 0.0, 0.0);
+        entity.increase_rotation(0.0, 1.0, 0.0);
         renderer::prepare();
         shader.program.start();
         // game logic
-        renderer::render(&textured_model);
+        renderer::render(&entity, &shader);
         shader.program.stop();
         display_manager.update_display();
     }
