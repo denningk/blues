@@ -16,11 +16,15 @@ use models::textured_model::TexturedModel;
 use toolbox::math;
 use entities::entity::Entity;
 
+pub const WIDTH: u32 = 800;
+pub const HEIGHT: u32 = 600;
+
 fn main() {
     // create window
-    let mut display_manager = DisplayManager::create_display("Blues Game Engine", 800, 600);
+    let mut display_manager = DisplayManager::create_display("Blues Game Engine", WIDTH, HEIGHT);
     let mut loader = Loader::new();
     let shader = static_shader::StaticShader::new();
+    renderer::initialize(&shader);
 
     let vertices: Vec<f32> = vec![
         -0.5,  0.5, 0.0,
@@ -45,12 +49,11 @@ fn main() {
     let texture = ModelTexture::new(loader.load_texture("funny.png"));
     let static_model = TexturedModel::new(model, texture);
 
-    let mut entity = Entity::new(static_model, vec3(-1.0,0.0,0.0), 0.0, 0.0, 0.0, 1.0);
+    let mut entity = Entity::new(static_model, vec3(0.0,0.0,-1.0), 0.0, 0.0, 0.0, 1.0);
 
     // render loop
     while !display_manager.should_window_close() {
-        entity.increase_position(0.002, 0.0, 0.0);
-        entity.increase_rotation(0.0, 1.0, 0.0);
+        entity.increase_position(0.0, 0.0, -0.1);
         renderer::prepare();
         shader.program.start();
         // game logic

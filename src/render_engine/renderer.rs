@@ -1,10 +1,29 @@
 extern crate gl;
 
+use cgmath::{Matrix4, perspective, Deg};
+
 use std::ptr;
 
 use crate::entities::entity::Entity;
 use crate::shaders::static_shader::StaticShader;
 use crate::toolbox::math;
+
+const FOV: f32 = 70.0;
+const NEAR_PLANE: f32 = 0.1;
+const FAR_PLANE: f32 = 1000.0;
+
+
+pub fn initialize(shader: &StaticShader) {
+    let projection_matrix = create_projection_matrix();
+    shader.program.start();
+    shader.load_projection_matrix(&projection_matrix);
+    shader.program.stop();
+}
+
+fn create_projection_matrix() -> Matrix4<f32> {
+    let aspect_ratio = crate::WIDTH as f32 / crate::HEIGHT as f32;
+    return perspective(Deg(FOV), aspect_ratio, NEAR_PLANE, FAR_PLANE);
+}
 
 pub fn prepare() {
     unsafe {
