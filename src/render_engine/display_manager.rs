@@ -55,4 +55,8 @@ impl DisplayManager {
     pub fn should_window_close(&self) -> bool {
         self.window.should_close()
     }
+
+    pub fn get_window(&self) -> &glfw::Window {
+        &self.window
+    }
 }

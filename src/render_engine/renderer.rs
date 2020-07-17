@@ -27,7 +27,8 @@ fn create_projection_matrix() -> Matrix4<f32> {
 
 pub fn prepare() {
     unsafe {
-        gl::Clear(gl::COLOR_BUFFER_BIT);
+        gl::Enable(gl::DEPTH_TEST);
+        gl::Clear(gl::COLOR_BUFFER_BIT|gl::DEPTH_BUFFER_BIT);
         gl::ClearColor(1.0, 0.0, 0.0, 1.0);
     }
 }
